@@ -4,6 +4,10 @@ packages:
 - .
 - location: ../ghc-heap-view
 
+extra-deps:
+- git: https://github.com/tibbe/unordered-containers
+  commit: 601b5ae93699ed9317d0e28ea4d75b84ffcc6e5f
+
 flags:
   ghc-heap-view:
     ghc_8_0: false
