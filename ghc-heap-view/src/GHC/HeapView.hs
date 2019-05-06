@@ -360,6 +360,12 @@ data GenClosure b =
         , mccPayload :: [b]
         -- Card table ignored
     } |
+    SmallMutArrClosure {
+        info         :: StgInfoTable
+        , mccPtrs    :: Word           -- ^ Number of pointers
+        , mccPayload :: [b]            -- ^ Array payload
+    } |
+
     MutVarClosure {
         info         :: StgInfoTable
         , var        :: b
@@ -408,6 +414,7 @@ allPtrs (APStackClosure {..}) = fun:payload
 allPtrs (BCOClosure {..}) = [instrs,literals,bcoptrs]
 allPtrs (ArrWordsClosure {..}) = []
 allPtrs (MutArrClosure {..}) = mccPayload
+allPtrs (SmallMutArrClosure {..}) = mccPayload
 allPtrs (MutVarClosure {..}) = [var]
 allPtrs (MVarClosure {..}) = [queueHead,queueTail,value]
 allPtrs (FunClosure {..}) = ptrArgs
@@ -629,10 +636,16 @@ getClosureData x = do
                 fail $ "Expected at least 2 words to ARR_WORDS, found " ++ show (length wds)
             return $ ArrWordsClosure itbl (wds !! 1) (drop 2 wds)
 
-        t | t == MUT_ARR_PTRS_FROZEN || t == MUT_ARR_PTRS_FROZEN0 -> do
+        t | t >= MUT_ARR_PTRS_CLEAN && t <= MUT_ARR_PTRS_FROZEN -> do
             unless (length wds >= 3) $
                 fail $ "Expected at least 3 words to MUT_ARR_PTRS_FROZEN0 found " ++ show (length wds)
             return $ MutArrClosure itbl (wds !! 1) (wds !! 2) ptrs
+
+        t | t >= SMALL_MUT_ARR_PTRS_CLEAN && t <= SMALL_MUT_ARR_PTRS_FROZEN -> do
+            unless (length wds >= 1) $
+                fail $ "Expected at least 1 word to SMALL_MUT_ARR_PTRS_* "
+                        ++ "found " ++ show (length wds)
+            pure $ SmallMutArrClosure itbl (wds !! 0) ptrs
 
         t | t == MUT_VAR_CLEAN || t == MUT_VAR_DIRTY ->
             return $ MutVarClosure itbl (head ptrs)
@@ -726,6 +739,9 @@ ppClosure showBox prec c = case c of
         "_other"
     UnsupportedClosure {..} ->
         "_unsupported"
+    SmallMutArrClosure {..} -> app
+        ["[", intercalate ", " (shorten (map (showBox 10) mccPayload)),"]"]
+
   where
     app [a] = a  ++ "()"
     app xs = addBraces (10 <= prec) (intercalate " " xs)
