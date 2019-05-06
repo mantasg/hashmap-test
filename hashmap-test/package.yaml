@@ -1,0 +1,23 @@
+name:                hashmap-test
+version:             0.1.0.0
+#synopsis:
+#description:
+homepage:            https://github.com/githubuser/hashmap-test#readme
+license:             BSD3
+author:              Author name here
+maintainer:          example@example.com
+copyright:           2019 Author name here
+category:            Web
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+  - ghc-heap-view
+  - unordered-containers
+  - parallel
+
+executables:
+  hashmap-test:
+    source-dirs:      src
+    main:             Main.hs

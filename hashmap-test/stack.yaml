@@ -1,0 +1,10 @@
+resolver: lts-11.20
+
+packages:
+- .
+- location: ../ghc-heap-view
+
+flags:
+  ghc-heap-view:
+    ghc_8_0: false
+    ghc_8_2: true

@@ -1,0 +1,33 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 95b8cab2cf5db5b7cac167c564062fd7d71f978f656282a94d1ed7ae73611710
+
+name:           hashmap-test
+version:        0.1.0.0
+category:       Web
+homepage:       https://github.com/githubuser/hashmap-test#readme
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2019 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+executable hashmap-test
+  main-is: Main.hs
+  other-modules:
+      Paths_hashmap_test
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , ghc-heap-view
+    , parallel
+    , unordered-containers
+  default-language: Haskell2010
